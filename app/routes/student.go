@@ -14,7 +14,7 @@ func Student(router *gin.RouterGroup) {
 	student := router.Group("")
 	{
 		student.POST("/create", ctl.StudentCtl.Create)
-		student.PUT("/:id", ctl.StudentCtl.Update)
+		student.PATCH("/:id", ctl.StudentCtl.Update)
 		student.GET("/list", ctl.StudentCtl.List)
 		student.GET("/:id", ctl.StudentCtl.Get)
 		student.DELETE("/:id", ctl.StudentCtl.Delete)

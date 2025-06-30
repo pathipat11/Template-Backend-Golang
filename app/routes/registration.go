@@ -14,7 +14,7 @@ func Registration(router *gin.RouterGroup) {
 	registration := router.Group("")
 	{
 		registration.POST("/create", ctl.RegistrationCtl.Create)
-		registration.PUT("/:id", ctl.RegistrationCtl.Update)
+		registration.PATCH("/:id", ctl.RegistrationCtl.Update)
 		registration.GET("/list", ctl.RegistrationCtl.List)
 		registration.GET("/:id", ctl.RegistrationCtl.Get)
 		registration.DELETE("/:id", ctl.RegistrationCtl.Delete)
