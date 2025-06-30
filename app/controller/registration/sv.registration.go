@@ -65,7 +65,7 @@ func (s *Service) List(ctx context.Context, req request.ListRegistration) ([]res
 		TableExpr("registrations AS r").
 		Join("JOIN activities AS a ON a.id = r.activity_id::uuid").
 		Join("JOIN students AS s ON s.id = r.student_id::uuid").
-		ColumnExpr(`r.id, r.activity_id, a.name, a.description, a.release_date,
+		ColumnExpr(`r.id, r.activity_idname, a.description, a.release_date,
 					r.student_id, s.first_name, s.last_name, s.student_number, r.created_at, r.updated_at`).
 		Where("r.deleted_at IS NULL")
 
