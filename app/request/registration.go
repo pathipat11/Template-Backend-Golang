@@ -1,8 +1,8 @@
 package request
 
 type CreateRegistration struct {
-	ActivitiesID string `json:"activity_id"`
-	StudentsID   string `json:"Student_id"`
+	ActivityID string `json:"activity_id"`
+	StudentID string `json:"Student_id"`
 }
 
 type UpdateRegistration struct {

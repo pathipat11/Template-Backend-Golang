@@ -14,8 +14,8 @@ import (
 func (s *Service) Create(ctx context.Context, req request.CreateRegistration) (*model.Registration, bool, error) {
 
 	m := &model.Registration{
-		ActivitiesID: req.ActivitiesID,
-		StudentsID:   req.StudentsID,
+		ActivityID: req.ActivityID,
+		StudentID:  req.StudentID,
 	}
 
 	_, err := s.db.NewInsert().Model(m).Exec(ctx)
@@ -34,14 +34,14 @@ func (s *Service) Update(ctx context.Context, req request.UpdateRegistration, id
 	}
 
 	m := &model.Registration{
-		ActivitiesID: req.ActivitiesID,
-		StudentsID:   req.StudentsID,
+		ActivityID: req.ActivityID,
+		StudentID:  req.StudentID,
 	}
 	logger.Info(m)
 	m.SetUpdateNow()
 	_, err = s.db.NewUpdate().Model(m).
-		Set("activities_id = ?activities_id").
-		Set("students_id = ?students_id").
+		Set("activity_id = ?activity_id").
+		Set("student_id = ?student_id").
 		Set("updated_at = ?updated_at").
 		WherePK().
 		OmitZero().
@@ -60,18 +60,22 @@ func (s *Service) List(ctx context.Context, req request.ListRegistration) ([]res
 	offset := (req.Page - 1) * req.Size
 
 	m := []response.ListRegistration{}
+
 	query := s.db.NewSelect().
 		TableExpr("registrations AS r").
-		Column("r.id", "r.activity_id", "r.student_id", "r.created_at", "r.updated_at").
-		Where("deleted_at IS NULL")
+		Join("JOIN activities AS a ON a.id = r.activity_id::uuid").
+		Join("JOIN students AS s ON s.id = r.student_id::uuid").
+		ColumnExpr(`r.id, r.activity_id, a.name, a.description, a.release_date,
+					r.student_id, s.first_name, s.last_name, s.student_number, r.created_at, r.updated_at`).
+		Where("r.deleted_at IS NULL")
 
 	if req.Search != "" {
-		search := fmt.Sprintf("%" + strings.ToLower(req.Search) + "%")
+		search := fmt.Sprintf("%%%s%%", strings.ToLower(req.Search))
 		if req.SearchBy != "" {
-			search := strings.ToLower(req.Search)
-			query.Where(fmt.Sprintf("LOWER(r.%s) LIKE ?", req.SearchBy), search)
+			searchBy := strings.ToLower(req.SearchBy)
+			query.Where(fmt.Sprintf("LOWER(%s) LIKE ?", searchBy), search)
 		} else {
-			query.Where("LOWER(name) LIKE ?", search)
+			query.Where("LOWER(a.name) LIKE ?", search)
 		}
 	}
 
