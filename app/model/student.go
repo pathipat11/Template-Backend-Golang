@@ -11,6 +11,7 @@ type Student struct {
 	FirstName     string `bun:"first_name,notnull"`
 	LastName      string `bun:"last_name,notnull"`
 	StudentNumber string `bun:"student_number,notnull"`
+	Password      string `bun:"password,notnull"`
 
 	Registrations []*Registration `bun:"rel:has-many,join:id=student_id"`
 
